@@ -5,6 +5,9 @@ A python script that converts a depth map to a 3D mesh in .obj format.
 Visualizing depth maps as a 3D mesh rather than a 2D grayscale image gives a better clue of what goes wrong in depth estimation.   
 Most papers on depth estimation visualize their results as a 3D mesh. However, they don't provide any code to do so. For this reason, I implemented this mini-script.
 
+## Requirements
+- Python 3.2+
+- OpenCV
 
 ## Usage
 
