@@ -19,5 +19,5 @@ python DepthToObj.py --depthPath [DEPTH_NAME_OR_PATH] --texturePath [TEXTURE_NAM
 **optional:**   
    `--texturePath` – path to the texture file. Defaults to empty string. If not defined, `.mtl` will not be created.   
    `--objPath` – output path and name of `.obj` file. Defaults to `model.obj`. If path or file doesn't exist, they will be created.   
-   `--mtlPath` – output path and name of `.mtl` file. Defaults to `model.mtl`. If path or file doesn't exist, they will be created.  
+   `--mtlPath` – output path and name of `.mtl` file. Defaults to `model.mtl`. If path or file doesn't exist, they will be created. If `--texturePath` was not defined, this file will not be created.   
    `--matName` – name of material to be created with the texture. Defaults to `colored`.
