@@ -10,7 +10,7 @@ Most papers on depth estimation visualize their results as a 3D mesh. However, t
 
 The simplest usage is to put the script in the same folder as depth map and, optionally, the texture and call:
 ```
-python DepthToObj.py --depthPath [DEPTH_NAME].png --texturePath [TEXTURE_NAME].png
+python DepthToObj.py --depthPath [DEPTH_NAME_OR_PATH] --texturePath [TEXTURE_NAME_OR_PATH]
 ```
 
 ### Options and input
