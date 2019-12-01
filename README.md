@@ -14,7 +14,9 @@ python DepthToObj.py --depthPath [DEPTH_NAME_OR_PATH] --texturePath [TEXTURE_NAM
 ```
 
 ### Options and input
-`--depthPath` **required** – path to the depth file. Depth file is required to be stored in a 16bit `.png` format in millimeter scale. It is then converted to float and divided by 1000 to obtain meters. Defaults to `'depth.png'`.   
+**required:**   
+`--depthPath` – path to the depth file. Depth file is required to be stored in a 16bit `.png` format in millimeter scale. It is then converted to float and divided by 1000 to obtain meters. Defaults to `'depth.png'`.   
+**optional:**   
 `--texturePath` – path to the texture file. Defaults to empty string. If not defined, `.mtl` will not be created.   
 `--objPath` – output path and name of `.obj` file. Defaults to `model.obj`. If path or file doesn't exist, they will be created.   
 `--mtlPath` – output path and name of `.mtl` file. Defaults to `model.mtl`. If path or file doesn't exist, they will be created.  
