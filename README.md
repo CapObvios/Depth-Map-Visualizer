@@ -11,7 +11,7 @@ Most papers on depth estimation visualize their results as a 3D mesh. However, t
 
 ## Usage
 
-The simplest usage is to put the script in the same folder as depth map and, optionally, the texture and call:
+The simplest usage is to put the script in the same folder as depth map and, optionally, the texture and then call:
 ```
 python DepthToObj.py --depthPath [DEPTH_NAME_OR_PATH] --texturePath [TEXTURE_NAME_OR_PATH]
 ```
