@@ -3,6 +3,8 @@ import numpy as np
 import cv2
 import math
 import os
+import PIL
+import PIL.Image
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -45,7 +47,9 @@ def vete(v, vt):
 
 def create_obj(depthPath, objPath, mtlPath, matName, useMaterial = True):
     
-    img = cv2.imread(depthPath, -1).astype(np.float32) / 1000.0
+    # img = cv2.imread(depthPath, -1).astype(np.float32) / 1000.0
+    img = PIL.Image.open(depthPath).convert("LA").convert("L")
+    img = np.array(img) / 1000.0
 
     w = img.shape[1]
     h = img.shape[0]
