@@ -1,4 +1,4 @@
-﻿import argparse
+import argparse
 import numpy as np
 import cv2
 import math
@@ -10,6 +10,9 @@ def parse_args():
     parser.add_argument('--depthPath', dest='depthPath',
                         help='depth map path',
                         default='depth.png', type=str)
+    parser.add_argument('--depthInvert', dest='depthInvert',
+                        help='Invert depth map',
+                        default=False, action='store_true')
     parser.add_argument('--texturePath', dest='texturePath',
                         help='corresponding image path',
                         default='', type=str)
@@ -22,6 +25,7 @@ def parse_args():
     parser.add_argument('--matName', dest='matName',
                         help='name of material to create',
                         default='colored', type=str)
+                        #
     args = parser.parse_args()
     return args
 
@@ -43,9 +47,11 @@ def create_mtl(mtlPath, matName, texturePath):
 def vete(v, vt):
     return str(v)+"/"+str(vt)
 
-def create_obj(depthPath, objPath, mtlPath, matName, useMaterial = True):
+def create_obj(depthPath, depthInvert, objPath, mtlPath, matName, useMaterial = True):
     
     img = cv2.imread(depthPath, -1).astype(np.float32) / 1000.0
+    if depthInvert == True:
+        img = 1.0 - img
 
     w = img.shape[1]
     h = img.shape[0]
@@ -109,5 +115,5 @@ if __name__ == '__main__':
     useMat = args.texturePath != ''
     if useMat:
         create_mtl(args.mtlPath, args.matName, args.texturePath)
-    create_obj(args.depthPath,args.objPath, args.mtlPath, args.matName, useMat)
+    create_obj(args.depthPath, args.depthInvert, args.objPath, args.mtlPath, args.matName, useMat)
     print("FINISHED")
