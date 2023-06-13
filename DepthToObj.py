@@ -25,7 +25,7 @@ def parse_args():
     parser.add_argument('--matName', dest='matName',
                         help='name of material to create',
                         default='colored', type=str)
-                        #
+
     args = parser.parse_args()
     return args
 
