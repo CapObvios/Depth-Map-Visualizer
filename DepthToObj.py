@@ -47,13 +47,53 @@ def create_mtl(mtlPath, matName, texturePath):
 def vete(v, vt):
     return str(v)+"/"+str(vt)
 
+def extract_depth_matrix_from_raw(depthMatrixRaw : np.array, rgbChannelIndexToUse : int, scaleToMeter : float) -> (bool, np.array):
+    '''
+    Checks if a given raw map is a depth matrix and returns a 2D map if it's a depth matrix.
+
+    Arguments:
+        depthMatrixRaw: A map that is claimed to be a depth matrix.
+        rgbChannelIndexToUse: index of the channel that will be channel in RGB that will be used.
+            Has to be 0,1, or 2 (R, G, or B channel correspondingly).
+            Meaningful if the depth matrix is encoded as an RGB image. Ignored if the raw depth matrix has only 1 channel.
+        scaleToMeter: scale that should be applied to values to convert them to meters.
+
+    Return:
+        isSuccess: whether depthMatrixRaw is supported.
+            If False, then we don't support such a format (yet).
+        depthMatrix: In case of success, processed and scaled version of depthMatrixRaw.
+            Otherwise will be None.
+    '''
+
+    # Check input for validity.
+    if len(depthMatrixRaw.shape) not in [2, 3]:
+        print('depthMatrix has to have 2 or 3 axes, but got shape: %r', depthMatrixRaw.shape)
+        return False, None
+
+    if len(depthMatrixRaw.shape) == 3 and rgbChannelIndexToUse >= depthMatrixRaw.shape[2]:
+        print('Trying to read channel rgbChannelIndexToUse=%d, but depth matrix has only %d channels (shape=%r)', (rgbChannelIndexToUse, depthMatrixRaw.shape[2], depthMatrixRaw.shape))
+        return False, None
+
+    # Take a correct 2D map.
+    depthMatrix = depthMatrixRaw
+    if len(depthMatrixRaw.shape) == 3:
+        depthMatrix = depthMatrixRaw[:,:,rgbChannelIndexToUse]
+
+    # Convert to meters.
+    depthMatrix *= scaleToMeter
+
+    return True, depthMatrix
+
+
 def create_obj(depthPath, depthInvert, objPath, mtlPath, matName, useMaterial = True):
     
     img = cv2.imread(depthPath, -1).astype(np.float32) / 1000.0
 
-    if len(img.shape) > 2 and img.shape[2] > 1:
-       print('Expecting a 1D map, but depth map at path %s has shape %r'% (depthPath, img.shape))
-       return
+    isSuccess, img = extract_depth_matrix_from_raw(depthMatrixRaw=img, rgbChannelIndexToUse=0, scaleToMeter=0.001)
+
+    if not isSuccess:
+        # Failed extracting depth matrix.
+        return
 
     if depthInvert == True:
         img = 1.0 - img
