@@ -25,6 +25,9 @@ def parse_args():
     parser.add_argument('--matName', dest='matName',
                         help='name of material to create',
                         default='colored', type=str)
+    parser.add_argument('--scaleToMeter', dest='scaleToMeter',
+                        help='Scale to apply to the input depth matrix to convert it to meters. By default, expecting depth to be 16bit integer `.png` format in millimeter scale (kinect), therefore the default value is 0.001.',
+                        default=0.001, type=float)
 
     args = parser.parse_args()
     return args
@@ -85,15 +88,14 @@ def extract_depth_matrix_from_raw(depthMatrixRaw : np.array, rgbChannelIndexToUs
     return True, depthMatrix
 
 
-def create_obj(depthPath, depthInvert, objPath, mtlPath, matName, useMaterial = True):
+def create_obj(depthPath, scaleToMeter, depthInvert, objPath, mtlPath, matName, useMaterial = True):
     
     img = cv2.imread(depthPath, -1).astype(np.float32)
 
     isExtractDepthMatrixSuccess, img = extract_depth_matrix_from_raw(
         depthMatrixRaw=img,
         rgbChannelIndexToUse=0,
-        scaleToMeter=0.001
-    )
+        scaleToMeter=scaleToMeter)
 
     if not isExtractDepthMatrixSuccess:
         # Failed extracting depth matrix.
@@ -163,6 +165,18 @@ if __name__ == '__main__':
     args = parse_args()
     useMat = args.texturePath != ''
     if useMat:
-        create_mtl(args.mtlPath, args.matName, args.texturePath)
-    create_obj(args.depthPath, args.depthInvert, args.objPath, args.mtlPath, args.matName, useMat)
+        create_mtl(
+            args.mtlPath,
+            args.matName,
+            args.texturePath)
+
+    create_obj(
+        args.depthPath,
+        args.scaleToMeter,
+        args.depthInvert,
+        args.objPath,
+        args.mtlPath,
+        args.matName,
+        useMat)
+
     print("FINISHED")
