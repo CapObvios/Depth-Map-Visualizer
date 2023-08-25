@@ -87,7 +87,7 @@ def extract_depth_matrix_from_raw(depthMatrixRaw : np.array, rgbChannelIndexToUs
 
 def create_obj(depthPath, depthInvert, objPath, mtlPath, matName, useMaterial = True):
     
-    img = cv2.imread(depthPath, -1).astype(np.float32) / 1000.0
+    img = cv2.imread(depthPath, -1).astype(np.float32)
 
     isExtractDepthMatrixSuccess, img = extract_depth_matrix_from_raw(
         depthMatrixRaw=img,
