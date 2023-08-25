@@ -98,7 +98,7 @@ def create_obj(depthPath, scaleToMeter, depthInvert, objPath, mtlPath, matName, 
         scaleToMeter=scaleToMeter)
 
     if not isExtractDepthMatrixSuccess:
-        # Failed extracting depth matrix.
+        # Failed extracting depth matrix, can't create obj file.
         return
 
     if depthInvert == True:
@@ -152,7 +152,7 @@ def create_obj(depthPath, scaleToMeter, depthInvert, objPath, mtlPath, matName, 
         for u in range(0, img.shape[1]-1):
             for v in range(0, img.shape[0]-1):
 
-                v1 = ids[u,v]; v2 = ids[u+1,v]; v3 = ids[u,v+1]; v4 = ids[u+1,v+1];
+                v1 = ids[u,v]; v2 = ids[u+1,v]; v3 = ids[u,v+1]; v4 = ids[u+1,v+1]
 
                 if v1 == 0 or v2 == 0 or v3 == 0 or v4 == 0:
                     continue
