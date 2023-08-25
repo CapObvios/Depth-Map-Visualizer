@@ -89,9 +89,13 @@ def create_obj(depthPath, depthInvert, objPath, mtlPath, matName, useMaterial = 
     
     img = cv2.imread(depthPath, -1).astype(np.float32) / 1000.0
 
-    isSuccess, img = extract_depth_matrix_from_raw(depthMatrixRaw=img, rgbChannelIndexToUse=0, scaleToMeter=0.001)
+    isExtractDepthMatrixSuccess, img = extract_depth_matrix_from_raw(
+        depthMatrixRaw=img,
+        rgbChannelIndexToUse=0,
+        scaleToMeter=0.001
+    )
 
-    if not isSuccess:
+    if not isExtractDepthMatrixSuccess:
         # Failed extracting depth matrix.
         return
 
