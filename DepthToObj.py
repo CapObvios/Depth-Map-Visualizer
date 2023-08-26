@@ -28,6 +28,9 @@ def parse_args():
     parser.add_argument('--scaleToMeter', dest='scaleToMeter',
                         help='Scale to apply to the input depth matrix to convert it to meters. By default, expecting depth to be 16bit integer `.png` format in millimeter scale (kinect), therefore the default value is 0.001.',
                         default=0.001, type=float)
+    parser.add_argument('--fieldOfView', dest='fieldOfView',
+                        help='Angle in degrees of vertical field of view. Defines what the camera saw when recording depth matrix.',
+                        default=45.0, type=float)
 
     args = parser.parse_args()
     return args
@@ -88,7 +91,7 @@ def extract_depth_matrix_from_raw(depthMatrixRaw : np.array, rgbChannelIndexToUs
     return True, depthMatrix
 
 
-def create_obj(depthPath, scaleToMeter, depthInvert, objPath, mtlPath, matName, useMaterial = True):
+def create_obj(depthPath, fieldOfView, scaleToMeter, depthInvert, objPath, mtlPath, matName, useMaterial = True):
     
     img = cv2.imread(depthPath, -1).astype(np.float32)
 
@@ -107,8 +110,10 @@ def create_obj(depthPath, scaleToMeter, depthInvert, objPath, mtlPath, matName, 
     w = img.shape[1]
     h = img.shape[0]
 
-    FOV = math.pi/4
-    D = (img.shape[0]/2)/math.tan(FOV/2)
+    # Convert from degrees to axis angle.
+    fieldOfViewAxisAngle = fieldOfView / 180.0 * math.pi
+
+    D = (img.shape[0]/2)/math.tan(fieldOfViewAxisAngle/2)
 
     if max(objPath.find('\\'), objPath.find('/')) > -1:
         os.makedirs(os.path.dirname(mtlPath), exist_ok=True)
@@ -172,6 +177,7 @@ if __name__ == '__main__':
 
     create_obj(
         args.depthPath,
+        args.fieldOfView,
         args.scaleToMeter,
         args.depthInvert,
         args.objPath,
