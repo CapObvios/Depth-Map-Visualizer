@@ -4,6 +4,7 @@ import cv2
 import math
 import os
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
 
@@ -35,25 +36,28 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def create_mtl(mtlPath, matName, texturePath):
     if max(mtlPath.find('\\'), mtlPath.find('/')) > -1:
         os.makedirs(os.path.dirname(mtlPath), exist_ok=True)
     with open(mtlPath, "w") as f:
-        f.write("newmtl " + matName + "\n"      )
-        f.write("Ns 10.0000\n"                  )
-        f.write("d 1.0000\n"                    )
-        f.write("Tr 0.0000\n"                   )
-        f.write("illum 2\n"                     )
-        f.write("Ka 1.000 1.000 1.000\n"        )
-        f.write("Kd 1.000 1.000 1.000\n"        )
-        f.write("Ks 0.000 0.000 0.000\n"        )
-        f.write("map_Ka " + texturePath + "\n"  )
-        f.write("map_Kd " + texturePath + "\n"  )
+        f.write("newmtl " + matName + "\n")
+        f.write("Ns 10.0000\n")
+        f.write("d 1.0000\n")
+        f.write("Tr 0.0000\n")
+        f.write("illum 2\n")
+        f.write("Ka 1.000 1.000 1.000\n")
+        f.write("Kd 1.000 1.000 1.000\n")
+        f.write("Ks 0.000 0.000 0.000\n")
+        f.write("map_Ka " + texturePath + "\n")
+        f.write("map_Kd " + texturePath + "\n")
+
 
 def vete(v, vt):
     return str(v)+"/"+str(vt)
 
-def extract_depth_matrix_from_raw(depthMatrixRaw : np.array, rgbChannelIndexToUse : int, scaleToMeter : float) -> (bool, np.array):
+
+def extract_depth_matrix_from_raw(depthMatrixRaw: np.array, rgbChannelIndexToUse: int, scaleToMeter: float) -> (bool, np.array):
     '''
     Checks if a given raw map is a depth matrix and returns a 2D map if it's a depth matrix.
 
@@ -73,17 +77,19 @@ def extract_depth_matrix_from_raw(depthMatrixRaw : np.array, rgbChannelIndexToUs
 
     # Check input for validity.
     if len(depthMatrixRaw.shape) not in [2, 3]:
-        print('depthMatrix has to have 2 or 3 axes, but got shape: %r', depthMatrixRaw.shape)
+        print('depthMatrix has to have 2 or 3 axes, but got shape: %r',
+              depthMatrixRaw.shape)
         return False, None
 
     if len(depthMatrixRaw.shape) == 3 and rgbChannelIndexToUse >= depthMatrixRaw.shape[2]:
-        print('Trying to read channel rgbChannelIndexToUse=%d, but depth matrix has only %d channels (shape=%r)', (rgbChannelIndexToUse, depthMatrixRaw.shape[2], depthMatrixRaw.shape))
+        print('Trying to read channel rgbChannelIndexToUse=%d, but depth matrix has only %d channels (shape=%r)',
+              (rgbChannelIndexToUse, depthMatrixRaw.shape[2], depthMatrixRaw.shape))
         return False, None
 
     # Take a correct 2D map.
     depthMatrix = depthMatrixRaw
     if len(depthMatrixRaw.shape) == 3:
-        depthMatrix = depthMatrixRaw[:,:,rgbChannelIndexToUse]
+        depthMatrix = depthMatrixRaw[:, :, rgbChannelIndexToUse]
 
     # Convert to meters.
     depthMatrix *= scaleToMeter
@@ -91,8 +97,8 @@ def extract_depth_matrix_from_raw(depthMatrixRaw : np.array, rgbChannelIndexToUs
     return True, depthMatrix
 
 
-def create_obj(depthPath, fieldOfView, scaleToMeter, depthInvert, objPath, mtlPath, matName, useMaterial = True):
-    
+def create_obj(depthPath, fieldOfView, scaleToMeter, depthInvert, objPath, mtlPath, matName, useMaterial=True):
+
     img = cv2.imread(depthPath, -1).astype(np.float32)
 
     isExtractDepthMatrixSuccess, img = extract_depth_matrix_from_raw(
@@ -117,8 +123,8 @@ def create_obj(depthPath, fieldOfView, scaleToMeter, depthInvert, objPath, mtlPa
 
     if max(objPath.find('\\'), objPath.find('/')) > -1:
         os.makedirs(os.path.dirname(mtlPath), exist_ok=True)
-    
-    with open(objPath,"w") as f:    
+
+    with open(objPath, "w") as f:
         if useMaterial:
             f.write("mtllib " + mtlPath + "\n")
             f.write("usemtl " + matName + "\n")
@@ -131,39 +137,46 @@ def create_obj(depthPath, fieldOfView, scaleToMeter, depthInvert, objPath, mtlPa
 
                 d = img[v, u]
 
-                ids[u,v] = vid
+                ids[u, v] = vid
                 if d == 0.0:
-                    ids[u,v] = 0
+                    ids[u, v] = 0
                 vid += 1
 
-                x = u - w/2
-                y = v - h/2
+                x = u - w / 2
+                y = v - h / 2
                 z = -D
 
-                norm = 1 / math.sqrt(x*x + y*y + z*z)
+                norm = 1 / math.sqrt(x * x + y * y + z * z)
 
-                t = d/(z*norm)
+                t = d / (z * norm)
 
-                x = -t*x*norm
-                y = t*y*norm
-                z = -t*z*norm        
+                x = -t * x * norm
+                y = t * y * norm
+                z = -t * z * norm
 
                 f.write("v " + str(x) + " " + str(y) + " " + str(z) + "\n")
 
         for u in range(0, img.shape[1]):
             for v in range(0, img.shape[0]):
-                f.write("vt " + str(u/img.shape[1]) + " " + str(v/img.shape[0]) + "\n")
+                f.write("vt " + str(u/img.shape[1]) +
+                        " " + str(v/img.shape[0]) + "\n")
 
         for u in range(0, img.shape[1]-1):
             for v in range(0, img.shape[0]-1):
 
-                v1 = ids[u,v]; v2 = ids[u+1,v]; v3 = ids[u,v+1]; v4 = ids[u+1,v+1]
+                v1 = ids[u, v]
+                v2 = ids[u+1, v]
+                v3 = ids[u, v+1]
+                v4 = ids[u+1, v+1]
 
                 if v1 == 0 or v2 == 0 or v3 == 0 or v4 == 0:
                     continue
 
-                f.write("f " + vete(v1,v1) + " " + vete(v2,v2) + " " + vete(v3,v3) + "\n")
-                f.write("f " + vete(v3,v3) + " " + vete(v2,v2) + " " + vete(v4,v4) + "\n")
+                f.write("f " + vete(v1, v1) + " " +
+                        vete(v2, v2) + " " + vete(v3, v3) + "\n")
+                f.write("f " + vete(v3, v3) + " " +
+                        vete(v2, v2) + " " + vete(v4, v4) + "\n")
+
 
 if __name__ == '__main__':
     print("STARTED")
