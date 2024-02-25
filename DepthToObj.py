@@ -179,8 +179,9 @@ def create_obj(depthPath, fieldOfView, scaleToMeter, depthInvert, objPath, mtlPa
 
 
 def main():
-    print("STARTED")
     args = parse_args()
+    print('Started converting depth map (%s) into an obj file.' % (args.depthPath))
+
     useMat = args.texturePath != ''
     if useMat:
         create_mtl(
@@ -198,7 +199,7 @@ def main():
         args.matName,
         useMat)
 
-    print("FINISHED")
+    print("Finished converting depth map (%s), created obj file (%s)."  % (args.depthPath, args.objPath))
 
 if __name__ == '__main__':
     main()
