@@ -178,7 +178,7 @@ def create_obj(depthPath, fieldOfView, scaleToMeter, depthInvert, objPath, mtlPa
                         vete(v2, v2) + " " + vete(v4, v4) + "\n")
 
 
-if __name__ == '__main__':
+def main():
     print("STARTED")
     args = parse_args()
     useMat = args.texturePath != ''
@@ -199,3 +199,6 @@ if __name__ == '__main__':
         useMat)
 
     print("FINISHED")
+
+if __name__ == '__main__':
+    main()
